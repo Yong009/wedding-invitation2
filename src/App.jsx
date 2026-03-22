@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase Client Initialization
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Supabase Client Initialization (Direct Link for Production/GitHub Pages)
+const supabaseUrl = 'https://cxhdeyptqvypvkyighlk.supabase.co';
+const supabaseAnonKey = 'sb_publishable_hT8FWUg9DLta0HW-68Ti7A_cXo9qtIM';
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Common Section Component
