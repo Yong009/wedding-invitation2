@@ -23,18 +23,23 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24' # 최신 Node.js 24 버전으로 강제 지정
+          node-version: '22' # 안정적인 최신 LTS 버전으로 변경
           cache: 'npm'
+
+      - name: Debug Log
+        run: |
+          ls -R
+          pwd
 
       - name: Install and Build
         run: |
           npm install
-          npm run build
+          npm run build || { echo 'npm run build failed'; exit 1; }
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: dist/
 
   deploy:
     needs: build_site
