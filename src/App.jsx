@@ -127,7 +127,7 @@ function App() {
           <br/>
           <p>함께 걸어갈 저희의 첫 걸음에</p>
           <p>귀한 걸음 하시어</p>
-          <p>축복해 주시면 감사하겠습니다.</p>
+          <p>축복해 주시면 감사하겠습니다. ❤️</p>
         </div>
         <div className="parents serif">
           <p>김철수 · 이영희 <span className="relation">의 장남</span> <b>현수</b></p>
