@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+.DS_Store
+*.local
+setup_db.log
+check_supabase.js
+create_table.js
+test_supabase.js
