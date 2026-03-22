@@ -20,6 +20,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24' # 최신 Node.js 24 버전으로 강제 지정
+          cache: 'npm'
+
       - name: Install and Build
         run: |
           npm install
