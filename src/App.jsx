@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase Client Initialization (Direct Link for Production/GitHub Pages)
@@ -18,6 +18,19 @@ const Section = ({ id, children, className = "" }) => {
 function App() {
   const [guestMessages, setGuestMessages] = useState([]);
   const [newMessage, setNewMessage] = useState({ name: '', msg: '' });
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
+
+  const toggleMusic = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(e => console.error("Playback failed:", e));
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
 
   // Intersection Observer for animations
   useEffect(() => {
@@ -97,18 +110,28 @@ function App() {
   }, []);
 
   const images = [
-    '/웨딩1.jpg', '/웨딩3.jpg', '/웨딩4.jpg', '/웨딩5.jpg', '/웨딩6.jpg', 
-    '/웨딩7.jpg', '/웨딩8.jpg', '/웨딩9.jpg', '/웨딩10.jpg', '/웨딩11.jpg',
-    '/웨딩12.jpg', '/웨딩13.jpg', '/웨딩15.jpg', '/웨딩18.jpg', '/웨딩19.jpg',
-    '/남편.jpg', '/신부.jpg', '/같이1.jpg', '/같이2.jpg'
+    '웨딩1.jpg', '웨딩3.jpg', '웨딩4.jpg', '웨딩5.jpg', '웨딩6.jpg', 
+    '웨딩7.jpg', '웨딩8.jpg', '웨딩9.jpg', '웨딩10.jpg', '웨딩11.jpg',
+    '웨딩12.jpg', '웨딩13.jpg', '웨딩15.jpg', '웨딩18.jpg', '웨딩19.jpg',
+    '남편.jpg', '신부.jpg', '같이1.jpg', '같이2.jpg'
   ];
 
   return (
     <div className="app-container">
+      {/* Background Music */}
+      <audio ref={audioRef} src="bgm.mp3" loop />
+      <button 
+        className={`music-toggle ${isPlaying ? 'playing' : ''}`} 
+        onClick={toggleMusic}
+        aria-label="음악 재생/일시정지"
+      >
+        {isPlaying ? '🎵' : '🔇'}
+      </button>
+
       {/* 1. Intro Section */}
       <Section id="intro" className="intro fade-in">
         <div className="main-image-container">
-          <img src="/웨딩1.jpg" alt="메인 사진" className="main-photo" />
+          <img src="웨딩1.jpg" alt="메인 사진" className="main-photo" />
         </div>
         <div className="intro-content serif">
           <p className="date-top">2024. 09. 21. SAT PM 02:00</p>
@@ -143,7 +166,7 @@ function App() {
         <div className="profile-container">
           <div className="profile-card">
             <div className="profile-image">
-              <img src="/남편.jpg" alt="신랑 프로필" />
+              <img src="남편.jpg" alt="신랑 프로필" />
             </div>
             <div className="profile-info">
               <span className="label groom">신랑</span>
@@ -159,7 +182,7 @@ function App() {
 
           <div className="profile-card">
             <div className="profile-image">
-              <img src="/신부.jpg" alt="신부 프로필" />
+              <img src="신부.jpg" alt="신부 프로필" />
             </div>
             <div className="profile-info">
               <span className="label bride">신부</span>
@@ -187,7 +210,7 @@ function App() {
               선생님과 제자로 처음 만났습니다.
             </p>
             <div className="story-image">
-              <img src="/같이1.jpg" alt="스토리 사진" />
+              <img src="같이1.jpg" alt="스토리 사진" />
             </div>
             <p className="story-text sub">
               "꾸밀 수 없는 공간"에서 서로의 가장 자연스러운 모습을 보며<br/>
@@ -197,7 +220,7 @@ function App() {
           
           <div className="story-item">
             <div className="story-image">
-              <img src="/같이2.jpg" alt="스토리 사진" />
+              <img src="같이2.jpg" alt="스토리 사진" />
             </div>
             <p className="story-text">
               닮아가는 우리, 이제는 서로의 취미가 되고<br/>
@@ -756,6 +779,38 @@ function App() {
         .fade-in.visible {
           opacity: 1;
           transform: translateY(0);
+        }
+
+        /* Music Toggle Button */
+        .music-toggle {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.8);
+          border: 1px solid rgba(124, 77, 255, 0.2);
+          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.2rem;
+          cursor: pointer;
+          z-index: 2000;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(5px);
+        }
+
+        .music-toggle.playing {
+          animation: rotate 4s linear infinite;
+          background: rgba(124, 77, 255, 0.1);
+          border-color: #7c4dff;
+        }
+
+        @keyframes rotate {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
       `}</style>
     </div>
