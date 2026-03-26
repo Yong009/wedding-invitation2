@@ -19,6 +19,7 @@ function App() {
   const [guestMessages, setGuestMessages] = useState([]);
   const [newMessage, setNewMessage] = useState({ name: '', msg: '' });
   const [isPlaying, setIsPlaying] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const audioRef = useRef(null);
 
   const toggleMusic = () => {
@@ -62,6 +63,15 @@ function App() {
     };
     fetchMessages();
   }, []);
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (selectedImage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  }, [selectedImage]);
 
   const handleAddMessage = async (e) => {
     e.preventDefault();
@@ -257,12 +267,24 @@ function App() {
         <h2 className="serif">GALLERY</h2>
         <div className="gallery-grid">
           {images.map((src, idx) => (
-            <div key={idx} className="gallery-item">
+            <div key={idx} className="gallery-item" onClick={() => setSelectedImage(src)}>
               <img src={src} alt={`웨딩사진 ${idx+1}`} loading="lazy" />
             </div>
           ))}
         </div>
       </Section>
+
+      {/* Lightbox Modal */}
+      {selectedImage && (
+        <div className="modal-overlay" onClick={() => setSelectedImage(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <img src={selectedImage} alt="확대된 사진" className="modal-img" />
+            <button className="modal-close" onClick={() => setSelectedImage(null)} aria-label="닫기">
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 5. Location Section */}
       <Section id="location" className="fade-in">
@@ -806,6 +828,73 @@ function App() {
           animation: rotate 4s linear infinite;
           background: rgba(124, 77, 255, 0.1);
           border-color: #7c4dff;
+        }
+
+        /* Lightbox Modal Styles */
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.9);
+          backdrop-filter: blur(8px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 3000;
+          padding: 20px;
+          animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+          position: relative;
+          max-width: 90%;
+          max-height: 90vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-img {
+          max-width: 100%;
+          max-height: 90vh;
+          object-fit: contain;
+          border-radius: 12px;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-close {
+          position: absolute;
+          top: -40px;
+          right: -10px;
+          background: transparent;
+          border: none;
+          color: white;
+          font-size: 3rem;
+          cursor: pointer;
+          line-height: 1;
+          transition: transform 0.2s ease;
+          padding: 10px;
+        }
+
+        .modal-close:hover {
+          transform: scale(1.2);
+        }
+
+        .gallery-item {
+          cursor: pointer;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes zoomIn {
+          from { opacity: 0; transform: scale(0.8); }
+          to { opacity: 1; transform: scale(1); }
         }
 
         @keyframes rotate {
