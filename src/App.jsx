@@ -105,12 +105,12 @@ function App() {
       window.kakao.maps.load(() => {
         const container = document.getElementById('map');
         const options = {
-          center: new window.kakao.maps.LatLng(35.8551337, 128.6244966),
+          center: new window.kakao.maps.LatLng(35.1415, 129.0608),
           level: 3
         };
         const map = new window.kakao.maps.Map(container, options);
 
-        const markerPosition = new window.kakao.maps.LatLng(35.8551337, 128.6244966);
+        const markerPosition = new window.kakao.maps.LatLng(35.1415, 129.0608);
         const marker = new window.kakao.maps.Marker({
           position: markerPosition
         });
@@ -144,9 +144,9 @@ function App() {
           <img src="웨딩1.jpg" alt="메인 사진" className="main-photo" />
         </div>
         <div className="intro-content serif">
-          <p className="date-top">2024. 09. 21. SAT PM 02:00</p>
+          <p className="date-top">2026. 05. 16. SAT PM 02:30</p>
           <h1 className="names">김현수 & 박지영</h1>
-          <p className="venue">호텔 라온제나, 5층 그랜드홀</p>
+          <p className="venue">디엘웨딩홀, 3층 아모르홀</p>
         </div>
       </Section>
 
@@ -243,22 +243,26 @@ function App() {
 
       {/* 3. Calendar Section */}
       <Section id="calendar" className="fade-in">
-        <h2 className="serif">9월 21일</h2>
+        <h2 className="serif">5월 16일</h2>
         <div className="calendar-grid">
-          {/* Simple static calendar for demonstration */}
+          {/* Simple static calendar for May 2026 */}
           <div className="calendar-header">
             <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
           </div>
           <div className="calendar-days">
-            {[...Array(30)].map((_, i) => (
-              <div key={i} className={`day ${i + 1 === 21 ? 'selected' : ''}`}>
-                {i + 1}
-              </div>
-            ))}
+            {[...Array(31 + 4)].map((_, i) => {
+              const day = i - 4 + 1;
+              if (day <= 0) return <div key={i} className="day empty"></div>;
+              return (
+                <div key={i} className={`day ${day === 16 ? 'selected' : ''}`}>
+                  {day}
+                </div>
+              );
+            })}
           </div>
         </div>
         <div className="d-day serif">
-          저희 결혼식이 <b>예식 종료</b> 되었습니다.
+          우리의 소중한 날이 <b>얼마 남지 않았습니다.</b>
         </div>
       </Section>
 
@@ -293,9 +297,9 @@ function App() {
            {/* 카카오맵이 로드됩니다 */}
         </div>
         <div className="location-info serif">
-          <h3>호텔 라온제나 5층 그랜드홀</h3>
-          <p>대구광역시 수성구 범어천로 73</p>
-          <p>053-123-4567</p>
+          <h3>디엘웨딩홀 3층 아모르홀</h3>
+          <p>부산광역시 동구 조방로 14 (범일동, 동일타워)</p>
+          <p>051-123-4567</p>
         </div>
         <div className="nav-buttons">
           <button className="nav-btn kakao">카카오 맵으로 보기</button>
@@ -371,12 +375,7 @@ function App() {
         </div>
       </Section>
 
-      {/* Floating Bottom Bar */}
-      <div className="bottom-bar">
-        <button className="bar-btn">참석 가능 여부 전달</button>
-        <button className="bar-btn">장소 확인</button>
-        <button className="bar-btn">축하 메시지</button>
-      </div>
+
 
       <style>{`
         :root {
@@ -389,7 +388,6 @@ function App() {
 
         .app-container {
           background-color: var(--primary-bg);
-          padding-bottom: 90px;
           min-height: 100vh;
         }
 
@@ -607,29 +605,7 @@ function App() {
           border-bottom: 1px solid #f8f8f8;
         }
 
-        .bottom-bar {
-          position: fixed;
-          bottom: 25px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: calc(100% - 50px);
-          max-width: 430px;
-          background: rgba(255, 255, 255, 0.85);
-          backdrop-filter: blur(15px);
-          display: flex;
-          justify-content: space-around;
-          padding: 18px;
-          border-radius: 40px;
-          box-shadow: 0 15px 45px rgba(0,0,0,0.12);
-          z-index: 1000;
-          border: 1px solid rgba(255,255,255,0.3);
-        }
 
-        .bar-btn {
-          color: #7c4dff;
-          font-weight: 600;
-          font-size: 0.9rem;
-        }
 
         /* Section Titles */
         .section-title-eng {
