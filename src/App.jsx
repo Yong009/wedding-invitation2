@@ -416,6 +416,8 @@ function App() {
         .main-image-container {
           position: relative;
           width: 100%;
+          aspect-ratio: 3 / 4.4; /* portrait ratio for wedding photos */
+          background-color: #f0f0f0; /* placeholder while loading */
           overflow: hidden;
           border-bottom-left-radius: 40px;
           border-bottom-right-radius: 40px;

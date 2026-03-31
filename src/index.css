@@ -13,11 +13,39 @@
   padding: 0;
 }
 
+/* Custom scrollbar to ensure visibility and clean look */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1c4e9; /* Light lavender thumb */
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b39ddb;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 body {
   font-family: 'Noto Sans KR', sans-serif;
   color: var(--text-color);
   background-color: #fff;
   line-height: 1.6;
+  min-height: 100vh;
 }
 
 #root {
