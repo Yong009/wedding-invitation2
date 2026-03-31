@@ -19,7 +19,7 @@ function App() {
   const [guestMessages, setGuestMessages] = useState([]);
   const [newMessage, setNewMessage] = useState({ name: '', msg: '' });
   const [isPlaying, setIsPlaying] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
   const audioRef = useRef(null);
 
   const toggleMusic = () => {
@@ -66,12 +66,34 @@ function App() {
 
   // Prevent body scroll when modal is open
   useEffect(() => {
-    if (selectedImage) {
+    if (selectedIndex !== null) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'auto';
     }
-  }, [selectedImage]);
+  }, [selectedIndex]);
+
+  const handlePrev = (e) => {
+    e?.stopPropagation();
+    setSelectedIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const handleNext = (e) => {
+    e?.stopPropagation();
+    setSelectedIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (selectedIndex === null) return;
+      if (e.key === 'ArrowLeft') handlePrev();
+      if (e.key === 'ArrowRight') handleNext();
+      if (e.key === 'Escape') setSelectedIndex(null);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedIndex]);
 
   const handleAddMessage = async (e) => {
     e.preventDefault();
@@ -271,7 +293,7 @@ function App() {
         <h2 className="serif">GALLERY</h2>
         <div className="gallery-grid">
           {images.map((src, idx) => (
-            <div key={idx} className="gallery-item" onClick={() => setSelectedImage(src)}>
+            <div key={idx} className="gallery-item" onClick={() => setSelectedIndex(idx)}>
               <img src={src} alt={`웨딩사진 ${idx+1}`} loading="lazy" />
             </div>
           ))}
@@ -279,13 +301,22 @@ function App() {
       </Section>
 
       {/* Lightbox Modal */}
-      {selectedImage && (
-        <div className="modal-overlay" onClick={() => setSelectedImage(null)}>
+      {selectedIndex !== null && (
+        <div className="modal-overlay" onClick={() => setSelectedIndex(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <img src={selectedImage} alt="확대된 사진" className="modal-img" />
-            <button className="modal-close" onClick={() => setSelectedImage(null)} aria-label="닫기">
+            <button className="modal-nav prev" onClick={handlePrev} aria-label="이전 사진">
+              &#10094;
+            </button>
+            <img src={images[selectedIndex]} alt="확대된 사진" className="modal-img" />
+            <button className="modal-nav next" onClick={handleNext} aria-label="다음 사진">
+              &#10095;
+            </button>
+            <button className="modal-close" onClick={() => setSelectedIndex(null)} aria-label="닫기">
               &times;
             </button>
+            <div className="modal-counter">
+              {selectedIndex + 1} / {images.length}
+            </div>
           </div>
         </div>
       )}
@@ -859,6 +890,53 @@ function App() {
 
         .modal-close:hover {
           transform: scale(1.2);
+        }
+
+        .modal-nav {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          background: rgba(255, 255, 255, 0.2);
+          color: white;
+          border: none;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          font-size: 1.5rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+          z-index: 3100;
+        }
+
+        .modal-nav:hover {
+          background: rgba(255, 255, 255, 0.4);
+        }
+
+        .modal-nav.prev { left: -70px; }
+        .modal-nav.next { right: -70px; }
+
+        @media (max-width: 768px) {
+          .modal-nav {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.3);
+          }
+          .modal-nav.prev { left: 10px; }
+          .modal-nav.next { right: 10px; }
+          .modal-close { top: 10px; right: 10px; font-size: 2.5rem; }
+        }
+
+        .modal-counter {
+          position: absolute;
+          bottom: -40px;
+          left: 50%;
+          transform: translateX(-50%);
+          color: white;
+          font-size: 0.9rem;
+          letter-spacing: 0.1em;
         }
 
         .gallery-item {
