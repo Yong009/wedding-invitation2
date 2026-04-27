@@ -1075,7 +1075,8 @@ function App() {
           to { transform: rotate(360deg); }
         }
       `}</style>
-    </div>
+      </div>
+    </>
   );
 }
 
