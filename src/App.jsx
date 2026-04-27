@@ -20,7 +20,28 @@ function App() {
   const [newMessage, setNewMessage] = useState({ name: '', msg: '' });
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const audioRef = useRef(null);
+
+  // Preloading & Loading state
+  useEffect(() => {
+    const criticalImages = ['웨딩1.jpg', '남편.jpg', '신부.jpg', '같이1.jpg'];
+    const promises = criticalImages.map(src => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    });
+
+    // Ensure at least 1.8 seconds of loading for aesthetics
+    const minTime = new Promise(resolve => setTimeout(resolve, 1800));
+
+    Promise.all([...promises, minTime]).then(() => {
+      setIsLoading(false);
+    });
+  }, []);
 
   const toggleMusic = () => {
     if (audioRef.current) {
@@ -35,6 +56,8 @@ function App() {
 
   // Intersection Observer for animations
   useEffect(() => {
+    if (isLoading) return; // Wait until loading is done
+    
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -45,7 +68,7 @@ function App() {
 
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [isLoading]);
 
   // Update: Fetch messages from Supabase
   useEffect(() => {
@@ -64,14 +87,14 @@ function App() {
     fetchMessages();
   }, []);
 
-  // Prevent body scroll when modal is open
+  // Prevent body scroll when modal or loading is open
   useEffect(() => {
-    if (selectedIndex !== null) {
+    if (selectedIndex !== null || isLoading) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'auto';
     }
-  }, [selectedIndex]);
+  }, [selectedIndex, isLoading]);
 
   const handlePrev = (e) => {
     e?.stopPropagation();
@@ -118,6 +141,8 @@ function App() {
 
   // Kakao Map Initialization (Robust)
   useEffect(() => {
+    if (isLoading) return;
+
     const script = document.createElement('script');
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=ff09b5f692fad0cbbb8e690ace21f9c7&autoload=false`;
     script.async = true;
@@ -126,6 +151,7 @@ function App() {
     script.onload = () => {
       window.kakao.maps.load(() => {
         const container = document.getElementById('map');
+        if (!container) return;
         const options = {
           center: new window.kakao.maps.LatLng(35.1415, 129.0608),
           level: 3
@@ -139,7 +165,7 @@ function App() {
         marker.setMap(map);
       });
     };
-  }, []);
+  }, [isLoading]);
 
   const images = [
     '웨딩1.jpg', '웨딩3.jpg', '웨딩4.jpg', '웨딩5.jpg', '웨딩6.jpg', 
@@ -149,16 +175,26 @@ function App() {
   ];
 
   return (
-    <div className="app-container">
-      {/* Background Music */}
-      <audio ref={audioRef} src="bgm.mp3" loop />
-      <button 
-        className={`music-toggle ${isPlaying ? 'playing' : ''}`} 
-        onClick={toggleMusic}
-        aria-label="음악 재생/일시정지"
-      >
-        {isPlaying ? '🎵' : '🔇'}
-      </button>
+    <>
+      {/* Loading Overlay */}
+      <div className={`loading-overlay ${!isLoading ? 'fade-out' : ''}`}>
+        <div className="loading-content">
+          <div className="heart-loader"></div>
+          <p className="loading-text serif">두 사람의 소중한 순간을 불러오고 있습니다...</p>
+        </div>
+      </div>
+
+      <div className={`app-container ${!isLoading ? 'loaded' : ''}`}>
+        {/* Background Music */}
+        <audio ref={audioRef} src="bgm.mp3" loop />
+        <button 
+          className={`music-toggle ${isPlaying ? 'playing' : ''}`} 
+          onClick={toggleMusic}
+          aria-label="음악 재생/일시정지"
+        >
+          {isPlaying ? '🎵' : '🔇'}
+        </button>
+
 
       {/* 1. Intro Section */}
       <Section id="intro" className="intro fade-in">
@@ -941,6 +977,87 @@ function App() {
 
         .gallery-item {
           cursor: pointer;
+        }
+
+        /* Loading Screen Styles */
+        .loading-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: #fdfaf6;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 9999;
+          transition: opacity 1s ease, visibility 1s;
+        }
+
+        .loading-overlay.fade-out {
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+        }
+
+        .loading-content {
+          text-align: center;
+        }
+
+        .heart-loader {
+          width: 30px;
+          height: 30px;
+          background-color: #ff8a80;
+          margin: 0 auto 30px;
+          position: relative;
+          transform: rotate(-45deg);
+          animation: heartBeat 1.2s infinite;
+        }
+
+        .heart-loader:before,
+        .heart-loader:after {
+          content: "";
+          background-color: #ff8a80;
+          border-radius: 50%;
+          width: 30px;
+          height: 30px;
+          position: absolute;
+        }
+
+        .heart-loader:before {
+          top: -15px;
+          left: 0;
+        }
+
+        .heart-loader:after {
+          top: 0;
+          left: 15px;
+        }
+
+        @keyframes heartBeat {
+          0% { transform: rotate(-45deg) scale(1); }
+          20% { transform: rotate(-45deg) scale(1.2); }
+          40% { transform: rotate(-45deg) scale(1); }
+          60% { transform: rotate(-45deg) scale(1.2); }
+          100% { transform: rotate(-45deg) scale(1); }
+        }
+
+        .loading-text {
+          color: #7c4dff;
+          font-size: 1rem;
+          margin-top: 20px;
+          opacity: 0.8;
+          letter-spacing: -0.02em;
+        }
+
+        /* App visibility transition */
+        .app-container {
+          opacity: 0;
+          transition: opacity 1.5s ease;
+        }
+
+        .app-container.loaded {
+          opacity: 1;
         }
 
         @keyframes fadeIn {
